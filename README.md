@@ -5,139 +5,54 @@
 ![Fastify](https://img.shields.io/badge/fastify-%23000000.svg?style=for-the-badge&logo=fastify&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![OpenAI](https://img.shields.io/badge/Alem--AI-412991?style=for-the-badge&logo=openai&logoColor=white)
 
-**Sun Proactive** — это современная AI-платформа для социального волонтерства. Проект связывает инициаторов социальных проектов (кураторов) с квалифицированными волонтерами, используя алгоритмы искусственного интеллекта для подбора и верификации.
-
----
-
-## 🚀 Ключевые AI-Фичи
-
-- **AI Подбор (Vector Search)**: Использование векторных вычислений (Сosine Similarity) на базе `text-embedding-3-small` для идеального мэтчинга между описанием задачи и навыками волонтёра.
-- **Explainable AI**: Алгоритм (Alem AI) сам пишет 2-3 предложения с аргументацией, почему он подобрал именно этого кандидата.
-- **AI-Консультант (RAG)**: Чат-бот на странице задачи, который отвечает *строго* по описанию задачи без галлюцинаций, экономя время куратора.
-- **Vision AI (Компьютерное Зрение)**: Проверка фотоотчетов волонтёров в автоматическом режиме с помощью модели **Google Gemini 1.5 Flash**. AI проверяет фото на соответствие задаче и пресекает обман (взлом промптов).
-- **Автономный AI-Менеджер**: Фоновый крон-процесс, который сам сканирует 'горящие' дедлайны по задачам и рассылает таргет-пуши (уведомления) подходящим волонтерам.
-
-## 🛠 Технологический стек
-
-Проект разделен на изолированные Frontend и Backend для высокой производительности и безопасности.
-
-### Бэкенд (Standalone API)
-- **Фреймворк**: Fastify (TypeScript) + Node.js
-- **БД**: PostgreSQL (Hosted on Alem AI Database)
-- **ORM**: Drizzle ORM
-- **Безопасность**: `bcrypt` (12 rounds) для хеширования паролей, stateless JWT токены, Role-Based Access Control, `@fastify/helmet`, `@fastify/rate-limit`.
-
-### Фронтенд (UI)
-- **Фреймворк**: Next.js 15 (App Router)
-- **Стилизация**: Tailwind CSS v4 + кастомный Glassmorphism (`@layer`)
-- **Взаимодействие**: Centralized API Client (с авто-менеджментом JWT).
+**Sun Proactive** is an AI-powered platform for social volunteering. It connects project curators with qualified volunteers using AI-based matching and verification.
 
 ---
 
-## ⚙️ Установка и локальный запуск
+## Key AI Features
 
-Вам нужно запустить 2 сервера: бэкенд и фронтенд.
+- **AI Matching (Vector Search)**: Uses vector embeddings (`text-embedding-3-small`) with cosine similarity to match task descriptions with volunteer skills.
+- **Explainable AI**: The matching algorithm generates a short natural-language explanation for why a given candidate was recommended.
+- **AI Consultant (RAG)**: A task-page chatbot that answers strictly based on the task description, avoiding hallucinations and reducing curator workload.
+- **Vision AI**: Automated photo-report verification using **Google Gemini 1.5 Flash**, checking that submitted photos match the assigned task and flagging prompt-injection attempts.
+- **Autonomous AI Manager**: A background cron process that scans for approaching task deadlines and sends targeted push notifications to matching volunteers.
 
-### 1. Запуск Бэкенда (Fastify)
+## Tech Stack
 
-1. Перейдите в папку бэкенда:
-   ```bash
-   cd sun-proactive-backend
-   ```
-2. Установите зависимости:
-   ```bash
-   npm install
-   ```
-3. Создайте `.env` файл из примера:
-   ```bash
-   cp .env.example .env
-   ```
-4. Добавьте ваши API ключи в `.env`:
-   - `DATABASE_URL` (строка подключения к PostgreSQL)
-   - `OPENAI_API_KEY` (ключ от Alem AI для чатов и эмбеддингов)
-   - `GEMINI_API_KEY` (ключ для Vision проверки фотоотчетов)
-5. Примените миграции (PostgreSQL):
-   ```bash
-   npm run db:push
-   ```
-6. Сгенерируйте админа (опционально через скрипт):
-   ```bash
-   npx tsx src/scripts/create-admin.ts
-   ```
-7. Запустите:
-   ```bash
-   npm run dev
-   ```
-   *Сервер будет доступен на `http://localhost:8080/api`*
+The project is split into independent frontend and backend services for performance and security isolation.
 
-### 🔑 Административный доступ
+**Backend**
+- Fastify (TypeScript) + Node.js
+- PostgreSQL + Drizzle ORM
+- Security: bcrypt (12 rounds) password hashing, stateless JWT, Role-Based Access Control, `@fastify/helmet`, `@fastify/rate-limit`
 
-После первого запуска базы данных на платформе нет администратора. Чтобы создать его:
-
-1. Откройте терминал в папке `sun-proactive-backend`.
-2. Выполните команду:
-   ```bash
-   npx tsx src/scripts/create-admin.ts
-   ```
-3. Используйте следующие данные для входа:
-   - **Email**: `admin@sun.pro`
-   - **Пароль**: `admin`
-
-> [!IMPORTANT]
-> При первом входе под этими данными система **обязательно** потребует сменить пароль на персональный в целях безопасности. После смены пароля вы сможете войти в панель управления `/admin`.
-
-### 2. Запуск Фронтенда (Next.js)
-
-1. Откройте новый терминал и перейдите в папку UI:
-   ```bash
-   cd sun-proactive
-   ```
-2. Установите зависимости:
-   ```bash
-   npm install
-   ```
-3. Создайте `.env.local`:
-   ```env
-   NEXT_PUBLIC_API_URL=http://localhost:8080
-   ```
-4. Запустите:
-   ```bash
-   npm run dev
-   ```
-   *UI будет доступен на `http://localhost:3000`*
+**Frontend**
+- Next.js 15 (App Router)
+- Tailwind CSS v4 with custom glassmorphism styling
+- Centralized API client with automatic JWT handling
 
 ---
 
-## 🏗 Архитектура ролей
+## Role Architecture
 
-1. **Волонтёр (12+ лет)**
-   - Указывает навыки при регистрации.
-   - Видит открытые задачи.
-   - Запрашивает RAG-помощь у AI на странице задачи.
-   - Сдает "Отчет" загружая фото, которое проверяет ИИ.
-   *(Автоматически одобряется системой при регистрации)*
-
-2. **Куратор (Организатор)**
-   - Создает задачи через интерактивный диалог с AI.
-   - Смотрит отклики волонтеров (с аргументацией от ИИ, почему именно этот человек подходит).
-   - Принимает решения о допуске.
-   *(Аккаунт запрашивает одобрения от Админа)*
-
-3. **Администратор**
-   - Управляет пользователями.
-   - Одобряет или отклоняет заявки на статус «Куратора».
-   - Модерирует экосистему.
+1. **Volunteer (12+)** — sets skills on registration, views open tasks, gets RAG-based AI assistance on task pages, submits AI-verified photo reports.
+2. **Curator** — creates tasks through an AI-guided dialogue, reviews AI-ranked volunteer applications with explanations, approves participants. Requires admin approval to activate.
+3. **Administrator** — manages users, approves/rejects curator applications, moderates the platform.
 
 ---
 
-## 🛡 Безопасность (Production Ready)
+## Security
 
-- Все пароли хешируются `bcrypt`. Ни один пароль не хранится в открытом виде.
-- Сессии работают через асимметричные JWT (отказ от тяжелых stateful сессий).
-- `authGuard` и `adminGuard` жестко фильтруют API запросы.
-- HTTP-заголовки защищены Helmet (`@fastify/helmet`).
-- Лимит запросов (`@fastify/rate-limit`) - 100 запросов в минуту на каждый IP для предотвращения DDoS и брутфорса.
-- AI-кроны (запуск фоновых задач) аутентифицируются по `X-Cron-Secret`, предотвращая внешний запуск. 
-- На фронтенде полностью удален старый уязвимый монолитный Next.js `/api/` код: архитектура теперь на 100% decoupling.
+- All passwords hashed with bcrypt; no plaintext storage.
+- Stateless JWT sessions instead of heavy server-side session state.
+- `authGuard` / `adminGuard` middleware enforce access control on every route.
+- HTTP headers secured via Helmet.
+- Rate limiting: 100 requests/minute per IP to mitigate brute-force and DDoS.
+- Background AI cron jobs authenticate via a secret header, preventing external triggering.
+- Legacy monolithic Next.js API routes fully removed — frontend and backend are completely decoupled.
+
+---
+
+## My Role
+Sole developer — designed and built the entire system end-to-end, solo. Architected the AI matching pipeline from scratch (embedding generation, cosine similarity ranking, explainable-AI output), implemented the RAG-based chatbot, integrated Vision AI for automated photo verification, built the full Fastify backend with the JWT/RBAC security layer, and developed the Next.js frontend. No team — full-stack and AI implementation were entirely my own work.
